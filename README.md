@@ -16,6 +16,20 @@
 
 ---
 
+## 下载（不构建）
+
+不想跑构建的，直接拿成品：**[Release v0.1.0](https://github.com/EnernalIliary/mlogpt/releases/tag/v0.1.0)**
+
+| 资产 | 用途 |
+| --- | --- |
+| `mlogpt-zh-0.72m.msch` | 全尺寸蓝图 71.32 MB / 10,966 方块。留出约 104×104 空地，贴进去、按播放，右键**最右边**的 message 方块打中文 |
+| `mlogpt-toy-d8s8l2v32.msch` | 玩具版 57 台，10 秒验证「能贴、能跑、能出字」，不需要大空间 |
+| `mlogpt-zh-0.72m-fp32.npz` + `vocab-zh-4096.json` | 权重与词表（仓库里也有） |
+
+world processor 只在编辑器 / 沙盒 / `rules.allowEditWorldProcessors` 下运行，战役里贴了不会动。
+
+---
+
 ## 一句话定位
 
 把一个小 Transformer 的**全部推理**（嵌入、注意力、FFN、输出层、采样）编译成 mlog，铺进 Mindustry 的处理器阵列，让游戏里的方块自己算出下一个字。
