@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.msch
+!samples/*.msch
+_FACTS.md
+_*.json
+_*.log
+.venv/
