@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>mlogpt · 处理器阵列上的 Transformer</title>
+<style>
+  :root{--bg:#0f1216;--pn:#171c22;--ln:#2a323c;--tx:#e6edf3;--mu:#8b98a5;--ac:#4ea1ff;--ok:#3fb950;--warn:#d29922;--err:#f85149;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.55 "Segoe UI","Microsoft YaHei",system-ui,sans-serif}
+  header{padding:14px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  h1{font-size:16px;margin:0;font-weight:600}
+  .pill{font-size:12px;color:var(--mu);border:1px solid var(--ln);padding:2px 8px;border-radius:999px}
+  .wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 20px}
+  @media (max-width:1080px){.wrap{grid-template-columns:1fr}}
+  .card{background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:14px}
+  .card h2{font-size:13px;margin:0 0 10px;color:var(--mu);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+  .row{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:8px}
+  label{display:block;font-size:12px;color:var(--mu);margin-bottom:3px}
+  input,select{width:100%;background:#0d1117;color:var(--tx);border:1px solid var(--ln);border-radius:6px;padding:6px 8px;font:13px inherit}
+  input:focus,select:focus{outline:1px solid var(--ac)}
+  .chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--tx);margin:6px 0 10px}
+  .chk input{width:auto}
+  button{background:var(--ac);color:#04121f;border:0;border-radius:7px;padding:8px 14px;font:600 13px inherit;cursor:pointer}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  button.ghost{background:transparent;color:var(--tx);border:1px solid var(--ln)}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .log{margin:0 20px 20px;background:#0b0f13;border:1px solid var(--ln);border-radius:10px}
+  .logh{display:flex;gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--ln);font-size:12px;color:var(--mu)}
+  pre{margin:0;padding:10px 12px;max-height:300px;overflow:auto;font:12px/1.5 Consolas,monospace;white-space:pre-wrap;word-break:break-all}
+  .res{margin:0 20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:1080px){.res{grid-template-columns:1fr}}
+  .big{font-size:30px;line-height:1.3;letter-spacing:.12em;margin:6px 0 10px;min-height:40px;color:#dbe9ff;word-break:break-all}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  td{padding:3px 0;border-bottom:1px dashed #202833;color:var(--tx)}
+  td.k{color:var(--mu);width:46%}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+  .chip{background:#0d1117;border:1px solid var(--ln);border-radius:999px;padding:2px 9px;font:12px Consolas,monospace}
+  .ok{color:var(--ok)}.bad{color:var(--err)}.warn{color:var(--warn)}
+  .hint{padding:0 20px 4px;color:var(--mu);font-size:12.5px}
+  code{background:#0d1117;border:1px solid var(--ln);border-radius:4px;padding:1px 5px;font:12px Consolas,monospace}
+</style>
+</head>
+<body>
+<header>
+  <h1>mlogpt · 处理器阵列上的 Transformer</h1>
+  <span class="pill" id="stBuild">构建：未开始</span>
+  <span class="pill" id="stRun">运行：未开始</span>
+  <span class="pill" id="stEl">0.0 s</span>
+</header>
+<div class="hint">用法：① 先点「构建」把 Transformer 铺成处理器阵列（tiny 约 1 s / 全尺寸约 65 s、71 MB 蓝图）② 再点「运行」在真执行器里自回归生成 ③ 下方看 token 和 message 方块上的中文。勾「输入模式」会多铺 144 台分词器，运行时会把你填的文本写进 message 方块、由游戏内分词器转成 token —— 这就是「游戏内打字 → 中文出字」的那条路。留空第二轮文本就只跑一轮。构建只要 Python+numpy；「运行」需要外部 Mindustry v160.7 jar 与姊妹仓 mlog-agentskill 的模拟器，没有时构建照常可用。</div>
+<div class="wrap">
+  <div class="card">
+    <h2>1 构建（生成 .msch 蓝图）</h2>
+    <div class="row">
+      <div><label>d 隐藏维</label><input id="d" value="128"></div>
+      <div><label>S 上下文</label><input id="S" value="16"></div>
+      <div><label>L 层数</label><input id="L" value="4"></div>
+      <div><label>V 词表</label><input id="V" value="4096"></div>
+      <div><label>N 生成长度</label><input id="N" value="8"></div>
+      <div><label>cap 单台上限</label><input id="cap" value="900"></div>
+      <div><label>seed_tok 种子</label><input id="seed_tok" value="82"></div>
+    </div>
+    <div class="row">
+      <div><label>权重 npz</label><select id="weights"></select></div>
+      <div><label>词表 json</label><select id="vocab"></select></div>
+    </div>
+    <div class="chk"><input type="checkbox" id="table_free" checked><span>无表嵌入（游戏内算 sin，省 1024 台嵌入服务器）</span></div>
+    <div class="chk"><input type="checkbox" id="input_mode"><span>输入模式（多铺 144 台分词器 + driver 等玩家在 message 方块里打字）</span></div>
+    <div class="row"><div><label>输入文本（构建侧算 numpy 参考；运行时可再改）</label><input id="input_text" value="量持法"></div></div>
+    <div class="row"><div><label>产物文件名（游戏里就叫这个名字）</label><input id="outname" value="mlogpt-zh-0.72m.msch"></div></div>
+    <div class="btns">
+      <button id="bBuild">构建</button>
+      <button class="ghost" id="bInstall" disabled>安装到游戏蓝图目录</button>
+      <button class="ghost" id="pFull">全尺寸（上次成功）</button>
+      <button class="ghost" id="pTiny">快速自测（tiny）</button>
+    </div>
+    <div style="margin-top:10px;font-size:12.5px;color:var(--mu)" id="instInfo"></div>
+  </div>
+  <div class="card">
+    <h2>2 运行（真执行器模拟）</h2>
+    <div class="row">
+      <div><label>蓝图 msch</label><select id="msch"></select></div>
+      <div><label>最多 tick</label><input id="ticks" value="45"></div>
+      <div><label>出齐后再跑</label><input id="extra" value="8"></div>
+    </div>
+    <div class="row">
+      <div><label>游戏内输入文本（注入 message 方块）</label><input id="run_input" value="量持法"></div>
+      <div><label>第二轮文本（留空=只跑一轮）</label><input id="run_input2" value=""></div>
+    </div>
+    <div class="btns">
+      <button id="bRun">运行</button>
+      <button class="ghost" id="bRefresh">刷新文件列表</button>
+    </div>
+    <div style="margin-top:12px;font-size:12.5px;color:var(--mu)">
+      说明：全尺寸（d=128/V=4096）构建约 60 s、装载约 45 s、生成 8 个 token 约 20 tick；
+      tiny（d=8/V=32）构建 1 s、跑完 3 s，用来确认整条链路通。<br>
+      构建产物自带 11 个 message 方块：输出 1~8 ｜ 说明 ｜ 状态 ｜ 输入（最右）。
+    </div>
+  </div>
+</div>
+<div class="log">
+  <div class="logh"><b id="logTitle">日志</b><span id="logMeta"></span></div>
+  <pre id="log">（还没有任务）</pre>
+</div>
+<div class="res">
+  <div class="card">
+    <h2>生成结果</h2>
+    <div class="big" id="msg">—</div>
+    <div class="chips" id="tokens"></div>
+    <table id="runTbl"></table>
+  </div>
+  <div class="card">
+    <h2>规模 / 参考</h2>
+    <table id="buildTbl"></table>
+  </div>
+</div>
+<script>
+var cur = {build: null, run: null};
+var timers = {};
+var lastBuilt = "";
+function q(id){return document.getElementById(id);}
+function setSt(which, text, cls){var e=q(which);e.textContent=text;e.className="pill"+(cls?(" "+cls):"");}
+function loadFiles(){
+  fetch("/api/files").then(function(r){return r.json();}).then(function(d){
+    fill("weights", d.weights); fill("vocab", d.vocab); fill("msch", d.msch);
+    pick("weights", "weights/mlogpt-zh-0.72m-fp32.npz", "mlogpt-zh-0.72m-fp32.npz");
+    pick("vocab", "weights/vocab-zh-4096.json", "vocab-zh-4096.json");
+    pick("msch", "mlogpt-zh-0.72m.msch", "mlogpt-zh-0.72m.msch");
+  });
+}
+function pick(id, want, fallback){
+  var s=q(id); if(!s.options.length) return;
+  for(var i=0;i<s.options.length;i++){ if(s.options[i].value===want){ s.selectedIndex=i; return; } }
+  for(var j=0;j<s.options.length;j++){ if(s.options[j].value===fallback){ s.selectedIndex=j; return; } }
+}
+function fill(id, arr){
+  var s=q(id); s.innerHTML="";
+  (arr||[]).forEach(function(f){var o=document.createElement("option");o.value=f;o.textContent=f;s.appendChild(o);});
+}
+function poll(kind){
+  var id = cur[kind]; if(!id) return;
+  fetch("/api/job?id="+encodeURIComponent(id)+"&from="+(kind==="build"?(window["offB"]||0):(window["offR"]||0)))
+  .then(function(r){return r.json();}).then(function(d){
+    if(d.error){return;}
+    var pre=q("log");
+    if(d.lines && d.lines.length){ pre.textContent += d.lines.join("\n")+"\n"; pre.scrollTop=pre.scrollHeight; }
+    if(kind==="build"){ window["offB"]=d.next; } else { window["offR"]=d.next; }
+    q("logTitle").textContent = (kind==="build"?"构建":"运行") + " 日志";
+    q("logMeta").textContent = "用时 " + d.elapsed + " s" + (d.tick?("  · tick "+d.tick):"") + (d.status!=="running"?("  · "+d.status):"");
+    q("stEl").textContent = d.elapsed + " s";
+    if(d.result){ render(kind, d); }
+    if(kind==="build" && d.status!=="running" && d.meta && d.meta.msch){
+      var base = d.meta.msch.split(/[\\/]/).pop();
+      loadFiles();
+      setTimeout(function(){ var s=q("msch"); for(var i=0;i<s.options.length;i++){ if(s.options[i].value===base){ s.selectedIndex=i; } } }, 700);
+      if(d.status==="done"){
+        var ri=q("run_input"); if(!ri.value){ ri.value=q("input_text").value; }
+        var tk=q("ticks"); if(Number(tk.value)<Number(q("N").value)*12+20){ tk.value=String(Number(q("N").value)*12+40); }
+        lastBuilt = base;
+        q("bInstall").disabled = false;
+        setSt("stRun","运行：蓝图已就绪 → 点『运行』","warn");
+        pre.textContent += "\n[提示] 构建只产出蓝图（.msch）。要看到生成的文字，请点右侧『运行』（需要游戏模拟器）；只装进游戏的话现在就可以点『安装到游戏蓝图目录』。\n";
+        pre.scrollTop=pre.scrollHeight;
+      }
+    }
+    if(d.status==="running"){ timers[kind]=setTimeout(function(){poll(kind);},900); }
+    else {
+      setSt(kind==="build"?"stBuild":"stRun", (kind==="build"?"构建":"运行")+": "+(d.status==="done"?"完成":"失败 ("+d.rc+")"), d.status==="done"?"ok":"bad");
+      q("bBuild").disabled=false; q("bRun").disabled=false;
+    }
+  });
+}
+function startBuild(){
+  q("bInstall").disabled = true; lastBuilt = "";
+  window["offB"]=0; q("log").textContent=""; 
+  setSt("stBuild","构建：运行中","warn"); q("bBuild").disabled=true;
+  fetch("/api/build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+    d:q("d").value, S:q("S").value, L:q("L").value, V:q("V").value, N:q("N").value, cap:q("cap").value,
+    seed_tok:q("seed_tok").value, table_free:q("table_free").checked, out:q("outname").value,
+    input:q("input_mode").checked, input_text:q("input_text").value,
+    weights:q("weights").value, vocab:q("vocab").value})})
+  .then(function(r){return r.json();}).then(function(d){cur.build=d.id;poll("build");});
+}
+function startRun(){
+  window["offR"]=0; q("log").textContent="";
+  setSt("stRun","运行：运行中","warn"); q("bRun").disabled=true;
+  fetch("/api/run",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+    msch:q("msch").value, ticks:q("ticks").value, extra:q("extra").value, slice:1,
+    input_text:q("run_input").value, input_text2:q("run_input2").value})})
+  .then(function(r){return r.json();}).then(function(d){cur.run=d.id;poll("run");});
+}
+function row(tbl,k,v,cls){var tr=document.createElement("tr");var a=document.createElement("td");a.className="k";a.textContent=k;var b=document.createElement("td");b.textContent=(v===null||v===undefined)?"—":String(v);if(cls)b.className=cls;tr.appendChild(a);tr.appendChild(b);tbl.appendChild(tr);}
+function clearTbl(id){var t=q(id);while(t.firstChild)t.removeChild(t.firstChild);}
+function render(kind, d){
+  var r = d.result || {};
+  if(kind==="build"){
+    clearTbl("buildTbl");
+    row("处理器", r.nprocs); row("world-cell", r.nworldcell); row("方块合计", (r.nprocs||0)+(r.nworldcell||0)+(r.msgpos?r.msgpos.length:0));
+    row("语句总数", r.total_stmts); row("前向语句", r.fwd_stmts); row("单台最大行数", r.maxlines + (r.over&&r.over.length?("  ⚠ 超限 "+r.over.length+" 台"):"  ✓"));
+    row("蓝图大小", r.bytes?((r.bytes/1048576).toFixed(2)+" MB"):null); row("构建耗时", r.build_s?r.build_s+" s":null);
+    row("d / S / L / V / N", [r.d,r.S,r.L,r.V,r.N].join(" / "));
+    row("参考 token（numpy）", (r.ref_tokens||[]).join(", "));
+    row("输入模式", r.input?("是 · 输入方块 message"+(r.input_idx+1)+" · prompt "+(r.prompt||[]).join(",")):"否");
+    var m=q("msch");
+    if(r.layout){ row("布局", "单元网格 " + r.layout.cc + " 列 / 处理器网格 " + r.layout.pw + " 列"); }
+  } else {
+    clearTbl("runTbl");
+    var toks=(r.tokens||[]).map(Number); var ref=(r.ref||[]).map(Number);
+    var same = toks.length && toks.length===ref.length && toks.every(function(x,i){return x===ref[i];});
+    row("token（mlog）", toks.join(", "));
+    row("token（numpy 参考）", ref.join(", "));
+    row("逐 token 一致", same?"是 ✓":"否 ✗", same?"ok":"bad");
+    row("出齐 tick", r.ticks); row("墙钟", (r.wall_s?r.wall_s+" s":null));
+    row("方块 / 已编码", [r.nblk, r.ncoded].join(" / "));
+    q("msg").textContent = r.msg || "（message 为空）";
+    var c=q("tokens"); while(c.firstChild)c.removeChild(c.firstChild);
+    toks.forEach(function(t){var s=document.createElement("span");s.className="chip";s.textContent=t;c.appendChild(s);});
+  }
+}
+q("bBuild").onclick=startBuild;
+q("bRun").onclick=startRun;
+q("bRefresh").onclick=loadFiles;
+q("bInstall").onclick=function(){
+  if(!lastBuilt){ alert("先构建一个蓝图"); return; }
+  q("bInstall").disabled=true;
+  fetch("/api/install",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({msch:lastBuilt})})
+  .then(function(r){return r.json();}).then(function(d){
+    var pre=q("log");
+    if(d.error){ pre.textContent += "\n[安装失败] "+d.error+"\n"; pre.scrollTop=pre.scrollHeight; q("bInstall").disabled=false; return; }
+    pre.textContent += "\n[安装完成] "+d.dst+"  ("+(d.bytes/1048576).toFixed(2)+" MB"+(d.replaced?", 覆盖同名":"")+")\n"+
+      "打开编辑器 → 蓝图 → 选中 "+lastBuilt.replace(/\.msch$/,"")+" → 贴到地图上 → 按播放。\n";
+    pre.scrollTop=pre.scrollHeight;
+    q("bInstall").disabled=false;
+  }).catch(function(e){ q("bInstall").disabled=false; alert("安装请求失败: "+e); });
+};
+function loadEnv(){
+  fetch("/api/env").then(function(r){return r.json();}).then(function(d){
+    q("instInfo").textContent = "游戏蓝图目录：" + (d.schematics||"?") + (d.exists?"（存在）":"（不存在，安装时会创建）");
+  }).catch(function(){});
+}
+loadEnv();
+q("pFull").onclick=function(){q("outname").value="mlogpt-zh-0.72m.msch";q("d").value=128;q("S").value=16;q("L").value=4;q("V").value=4096;q("N").value=8;q("cap").value=900;q("seed_tok").value=82;q("table_free").checked=true;q("input_mode").checked=true;q("input_text").value="量持法";q("run_input").value="量持法";q("run_input2").value="";q("ticks").value=120;loadFiles();pick("vocab","weights/vocab-zh-4096.json","vocab-zh-4096.json");pick("weights","weights/mlogpt-zh-0.72m-fp32.npz","mlogpt-zh-0.72m-fp32.npz");};
+q("pTiny").onclick=function(){q("outname").value="mlogpt-toy-d8s8l2v32.msch";q("d").value=8;q("S").value=8;q("L").value=2;q("V").value=32;q("N").value=4;q("cap").value=600;q("seed_tok").value=0;q("table_free").checked=false;q("input_mode").checked=true;q("input_text").value="数条";q("run_input").value="数条";q("run_input2").value="行数";pick("vocab","weights/toy-vocab-32.json","toy-vocab-32.json");pick("weights","weights/toy-d8s8l2v32.npz","toy-d8s8l2v32.npz");q("ticks").value=40;};
+loadFiles();
+</script>
+</body>
+</html>

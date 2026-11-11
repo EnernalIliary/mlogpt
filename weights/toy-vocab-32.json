@@ -1,0 +1,780 @@
+{
+ "id2ch": [
+  "<unk>",
+  "，",
+  "（",
+  "）",
+  "的",
+  "。",
+  "、",
+  "是",
+  "：",
+  "不",
+  "一",
+  "；",
+  "—",
+  "个",
+  "与",
+  "数",
+  "「",
+  "」",
+  "只",
+  "单",
+  "在",
+  "条",
+  "行",
+  "用",
+  "有",
+  "位",
+  "写",
+  "成",
+  "器",
+  "字",
+  "量",
+  "时"
+ ],
+ "ch2id": {
+  "，": 1,
+  "（": 2,
+  "）": 3,
+  "的": 4,
+  "。": 5,
+  "、": 6,
+  "是": 7,
+  "：": 8,
+  "不": 9,
+  "一": 10,
+  "；": 11,
+  "—": 12,
+  "个": 13,
+  "与": 14,
+  "数": 15,
+  "「": 16,
+  "」": 17,
+  "只": 18,
+  "单": 19,
+  "在": 20,
+  "条": 21,
+  "行": 22,
+  "用": 23,
+  "有": 24,
+  "位": 25,
+  "写": 26,
+  "成": 27,
+  "器": 28,
+  "字": 29,
+  "量": 30,
+  "时": 31
+ },
+ "V": 32,
+ "drop_oov": true,
+ "files": [
+  {
+   "path": "knowledge/AI-SETUP.md",
+   "val": false,
+   "chars": 732
+  },
+  {
+   "path": "knowledge/CONVENTIONS.md",
+   "val": false,
+   "chars": 1290
+  },
+  {
+   "path": "knowledge/INTEGRATION.md",
+   "val": false,
+   "chars": 1757
+  },
+  {
+   "path": "knowledge/KB.md",
+   "val": false,
+   "chars": 2110
+  },
+  {
+   "path": "knowledge/README.md",
+   "val": false,
+   "chars": 597
+  },
+  {
+   "path": "knowledge/VERSION.md",
+   "val": false,
+   "chars": 1942
+  },
+  {
+   "path": "knowledge/00-data/README.md",
+   "val": false,
+   "chars": 2341
+  },
+  {
+   "path": "knowledge/01-execution/E01-执行模型与预算.md",
+   "val": false,
+   "chars": 857
+  },
+  {
+   "path": "knowledge/01-execution/E02-指令语义陷阱.md",
+   "val": false,
+   "chars": 1633
+  },
+  {
+   "path": "knowledge/01-execution/E03-变量与内存边界.md",
+   "val": true,
+   "chars": 867
+  },
+  {
+   "path": "knowledge/01-execution/E04-时间与wait精度.md",
+   "val": false,
+   "chars": 947
+  },
+  {
+   "path": "knowledge/01-execution/E05-链接与@常量.md",
+   "val": false,
+   "chars": 909
+  },
+  {
+   "path": "knowledge/01-execution/E06-跨版本差异.md",
+   "val": false,
+   "chars": 956
+  },
+  {
+   "path": "knowledge/02-world/W01-blocks-multiblock-anchor.md",
+   "val": false,
+   "chars": 1711
+  },
+  {
+   "path": "knowledge/02-world/W02-crafting-recipes.md",
+   "val": false,
+   "chars": 2231
+  },
+  {
+   "path": "knowledge/02-world/W03-power.md",
+   "val": false,
+   "chars": 2171
+  },
+  {
+   "path": "knowledge/02-world/W04-liquids.md",
+   "val": false,
+   "chars": 2821
+  },
+  {
+   "path": "knowledge/02-world/W05-heat.md",
+   "val": false,
+   "chars": 2203
+  },
+  {
+   "path": "knowledge/02-world/W06-logistics.md",
+   "val": false,
+   "chars": 2741
+  },
+  {
+   "path": "knowledge/02-world/W07-drills-resources.md",
+   "val": true,
+   "chars": 2856
+  },
+  {
+   "path": "knowledge/02-world/W08-payloads.md",
+   "val": false,
+   "chars": 2978
+  },
+  {
+   "path": "knowledge/02-world/W09-terrain.md",
+   "val": false,
+   "chars": 1977
+  },
+  {
+   "path": "knowledge/02-world/W10-storage.md",
+   "val": false,
+   "chars": 2564
+  },
+  {
+   "path": "knowledge/02-world/W11-block-state.md",
+   "val": false,
+   "chars": 1988
+  },
+  {
+   "path": "knowledge/02-world/W12-sandbox-editor.md",
+   "val": false,
+   "chars": 1759
+  },
+  {
+   "path": "knowledge/02-world/W13-name-blocks-terrain.md",
+   "val": false,
+   "chars": 1506
+  },
+  {
+   "path": "knowledge/02-world/W14-name-blocks-industry.md",
+   "val": false,
+   "chars": 1625
+  },
+  {
+   "path": "knowledge/02-world/W15-name-blocks-combat.md",
+   "val": false,
+   "chars": 1562
+  },
+  {
+   "path": "knowledge/02-world/W16-name-items.md",
+   "val": false,
+   "chars": 940
+  },
+  {
+   "path": "knowledge/03-combat/C01-damage-pipeline.md",
+   "val": true,
+   "chars": 1115
+  },
+  {
+   "path": "knowledge/03-combat/C02-turrets.md",
+   "val": false,
+   "chars": 1212
+  },
+  {
+   "path": "knowledge/03-combat/C03-bullets.md",
+   "val": false,
+   "chars": 941
+  },
+  {
+   "path": "knowledge/03-combat/C04-status.md",
+   "val": false,
+   "chars": 913
+  },
+  {
+   "path": "knowledge/03-combat/C05-armor.md",
+   "val": false,
+   "chars": 1128
+  },
+  {
+   "path": "knowledge/03-combat/C06-unit-weapons.md",
+   "val": false,
+   "chars": 1757
+  },
+  {
+   "path": "knowledge/03-combat/C07-support.md",
+   "val": false,
+   "chars": 917
+  },
+  {
+   "path": "knowledge/03-combat/C08-waves.md",
+   "val": false,
+   "chars": 984
+  },
+  {
+   "path": "knowledge/03-combat/C09-defense.md",
+   "val": false,
+   "chars": 1171
+  },
+  {
+   "path": "knowledge/03-combat/C10-numbers.md",
+   "val": false,
+   "chars": 1597
+  },
+  {
+   "path": "knowledge/03-combat/C11-turret-verdict.md",
+   "val": true,
+   "chars": 1075
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T101-duo.md",
+   "val": false,
+   "chars": 957
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T102-scatter.md",
+   "val": false,
+   "chars": 937
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T103-scorch.md",
+   "val": false,
+   "chars": 823
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T104-hail.md",
+   "val": false,
+   "chars": 744
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T105-wave.md",
+   "val": false,
+   "chars": 919
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T106-lancer.md",
+   "val": false,
+   "chars": 797
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T107-arc.md",
+   "val": false,
+   "chars": 751
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T108-parallax.md",
+   "val": false,
+   "chars": 812
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T109-swarmer.md",
+   "val": false,
+   "chars": 762
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T110-salvo.md",
+   "val": true,
+   "chars": 752
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T111-segment.md",
+   "val": false,
+   "chars": 897
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T112-tsunami.md",
+   "val": false,
+   "chars": 852
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T113-fuse.md",
+   "val": false,
+   "chars": 757
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T114-ripple.md",
+   "val": false,
+   "chars": 721
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T115-cyclone.md",
+   "val": false,
+   "chars": 712
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T116-foreshadow.md",
+   "val": false,
+   "chars": 757
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T117-spectre.md",
+   "val": false,
+   "chars": 724
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T118-meltdown.md",
+   "val": false,
+   "chars": 784
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T201-breach.md",
+   "val": false,
+   "chars": 842
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T202-diffuse.md",
+   "val": true,
+   "chars": 783
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T203-sublimate.md",
+   "val": false,
+   "chars": 877
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T204-titan.md",
+   "val": false,
+   "chars": 786
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T205-disperse.md",
+   "val": false,
+   "chars": 700
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T206-afflict.md",
+   "val": false,
+   "chars": 720
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T207-lustre.md",
+   "val": false,
+   "chars": 871
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T208-scathe.md",
+   "val": false,
+   "chars": 763
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T209-smite.md",
+   "val": false,
+   "chars": 676
+  },
+  {
+   "path": "knowledge/03-combat/turrets/T210-malign.md",
+   "val": false,
+   "chars": 758
+  },
+  {
+   "path": "knowledge/04-units/U01-movement.md",
+   "val": false,
+   "chars": 1085
+  },
+  {
+   "path": "knowledge/04-units/U02-production.md",
+   "val": true,
+   "chars": 1605
+  },
+  {
+   "path": "knowledge/04-units/U03-ai.md",
+   "val": false,
+   "chars": 1194
+  },
+  {
+   "path": "knowledge/04-units/U04-abilities.md",
+   "val": false,
+   "chars": 1061
+  },
+  {
+   "path": "knowledge/04-units/U05-progression.md",
+   "val": false,
+   "chars": 1068
+  },
+  {
+   "path": "knowledge/04-units/U06-name-units.md",
+   "val": false,
+   "chars": 916
+  },
+  {
+   "path": "knowledge/05-campaign/CAMP-RULES.md",
+   "val": false,
+   "chars": 1778
+  },
+  {
+   "path": "knowledge/05-campaign/CAMP-SECTOR.md",
+   "val": false,
+   "chars": 2022
+  },
+  {
+   "path": "knowledge/05-campaign/CAMP-WINLOSE.md",
+   "val": false,
+   "chars": 1352
+  },
+  {
+   "path": "knowledge/05-campaign/CAMP.DIFFICULTY.001.md",
+   "val": false,
+   "chars": 848
+  },
+  {
+   "path": "knowledge/05-campaign/CAMP.SPAWN.001.md",
+   "val": false,
+   "chars": 987
+  },
+  {
+   "path": "knowledge/05-campaign/CAMP.WAVES.001.md",
+   "val": true,
+   "chars": 798
+  },
+  {
+   "path": "knowledge/06-mlog/M01-执行模型总览.md",
+   "val": false,
+   "chars": 872
+  },
+  {
+   "path": "knowledge/06-mlog/M02-变量与作用域.md",
+   "val": false,
+   "chars": 1095
+  },
+  {
+   "path": "knowledge/06-mlog/M03-控制流.md",
+   "val": false,
+   "chars": 1470
+  },
+  {
+   "path": "knowledge/06-mlog/M04-读写与感知.md",
+   "val": false,
+   "chars": 955
+  },
+  {
+   "path": "knowledge/06-mlog/M05-绘制与文本.md",
+   "val": false,
+   "chars": 1118
+  },
+  {
+   "path": "knowledge/06-mlog/M06-世界交互.md",
+   "val": false,
+   "chars": 1380
+  },
+  {
+   "path": "knowledge/06-mlog/M07-单位与逻辑控制.md",
+   "val": false,
+   "chars": 1814
+  },
+  {
+   "path": "knowledge/06-mlog/M08-性能与限制.md",
+   "val": false,
+   "chars": 837
+  },
+  {
+   "path": "knowledge/06-mlog/_README.md",
+   "val": false,
+   "chars": 689
+  },
+  {
+   "path": "knowledge/07-patterns/P01-architecture.md",
+   "val": true,
+   "chars": 988
+  },
+  {
+   "path": "knowledge/07-patterns/P02-state-machine.md",
+   "val": false,
+   "chars": 976
+  },
+  {
+   "path": "knowledge/07-patterns/P03-comm-bus.md",
+   "val": false,
+   "chars": 1006
+  },
+  {
+   "path": "knowledge/07-patterns/P04-data-structures.md",
+   "val": false,
+   "chars": 942
+  },
+  {
+   "path": "knowledge/07-patterns/P05-radar-targeting.md",
+   "val": false,
+   "chars": 832
+  },
+  {
+   "path": "knowledge/07-patterns/P06-performance.md",
+   "val": false,
+   "chars": 1043
+  },
+  {
+   "path": "knowledge/08-evidence/CHEAT.md",
+   "val": false,
+   "chars": 2411
+  },
+  {
+   "path": "knowledge/08-evidence/README.md",
+   "val": false,
+   "chars": 0
+  },
+  {
+   "path": "knowledge/08-evidence/_README.md",
+   "val": false,
+   "chars": 741
+  },
+  {
+   "path": "knowledge/08-evidence/anti-patterns.md",
+   "val": false,
+   "chars": 2499
+  },
+  {
+   "path": "knowledge/08-evidence/bench/README.md",
+   "val": true,
+   "chars": 9244
+  },
+  {
+   "path": "knowledge/08-evidence/probes/README.md",
+   "val": false,
+   "chars": 1083
+  },
+  {
+   "path": "knowledge/08-evidence/_report/rt_verify.md",
+   "val": false,
+   "chars": 3483
+  },
+  {
+   "path": "knowledge/08-evidence/_report/_rtverify/RERUN.md",
+   "val": false,
+   "chars": 647
+  },
+  {
+   "path": "knowledge/tools/INDEX_CONTRACT.md",
+   "val": false,
+   "chars": 798
+  },
+  {
+   "path": "knowledge/tools/README.md",
+   "val": false,
+   "chars": 2097
+  },
+  {
+   "path": "knowledge/tools/REBUILD.md",
+   "val": false,
+   "chars": 779
+  },
+  {
+   "path": "knowledge/_report/_tok_before.md",
+   "val": false,
+   "chars": 1353
+  },
+  {
+   "path": "knowledge/_report/bench20_b10.md",
+   "val": false,
+   "chars": 582
+  },
+  {
+   "path": "knowledge/_report/bench20_b125.md",
+   "val": false,
+   "chars": 603
+  },
+  {
+   "path": "knowledge/_report/bench20_b15.md",
+   "val": true,
+   "chars": 596
+  },
+  {
+   "path": "knowledge/_report/bench20_new.md",
+   "val": false,
+   "chars": 610
+  },
+  {
+   "path": "knowledge/_report/bench20_old.md",
+   "val": false,
+   "chars": 665
+  },
+  {
+   "path": "knowledge/_report/bench20_stage3.md",
+   "val": false,
+   "chars": 610
+  },
+  {
+   "path": "knowledge/_report/bench20_stage3_nw.md",
+   "val": false,
+   "chars": 582
+  },
+  {
+   "path": "knowledge/_report/bench20_stage3_w.md",
+   "val": false,
+   "chars": 603
+  },
+  {
+   "path": "knowledge/_report/num_audit.md",
+   "val": false,
+   "chars": 260
+  },
+  {
+   "path": "knowledge/_report/postpublish.md",
+   "val": false,
+   "chars": 30
+  },
+  {
+   "path": "knowledge/_report/postpublish_bench20.md",
+   "val": false,
+   "chars": 541
+  },
+  {
+   "path": "knowledge/_report/postpublish_official.md",
+   "val": false,
+   "chars": 43
+  },
+  {
+   "path": "knowledge/_report/postpublish_official_bench20.md",
+   "val": true,
+   "chars": 603
+  },
+  {
+   "path": "knowledge/_report/postpublish_stage3.md",
+   "val": false,
+   "chars": 33
+  },
+  {
+   "path": "knowledge/_report/postpublish_stage3_bench20.md",
+   "val": false,
+   "chars": 603
+  },
+  {
+   "path": "knowledge/_report/smoke_demo.md",
+   "val": false,
+   "chars": 188
+  },
+  {
+   "path": "knowledge/_report/smoke_demo_new.md",
+   "val": false,
+   "chars": 135
+  },
+  {
+   "path": "knowledge/_report/smoke_self.md",
+   "val": false,
+   "chars": 2520
+  },
+  {
+   "path": "knowledge/_report/warn_policy_advice.md",
+   "val": false,
+   "chars": 654
+  },
+  {
+   "path": "knowledge/_report/warnings_by_code.md",
+   "val": false,
+   "chars": 121
+  },
+  {
+   "path": "knowledge/_report/lead-scripts/_KB-patch.md",
+   "val": false,
+   "chars": 379
+  },
+  {
+   "path": "docs/Mlog辅助-JS移植评估.md",
+   "val": false,
+   "chars": 2245
+  },
+  {
+   "path": "docs/Mlog辅助-工作区快照-界面改版-方案.md",
+   "val": true,
+   "chars": 4350
+  },
+  {
+   "path": "docs/Mlog辅助-工作区快照-规划.md",
+   "val": false,
+   "chars": 2559
+  },
+  {
+   "path": "docs/Mlog辅助-蓝图方案.md",
+   "val": false,
+   "chars": 2477
+  },
+  {
+   "path": "docs/Mlog辅助-规划.md",
+   "val": false,
+   "chars": 16496
+  },
+  {
+   "path": "docs/Mlog辅助-设计.md",
+   "val": false,
+   "chars": 1847
+  },
+  {
+   "path": "docs/断言表.md",
+   "val": false,
+   "chars": 38315
+  },
+  {
+   "path": "docs/速查卡.md",
+   "val": false,
+   "chars": 1871
+  },
+  {
+   "path": "docs/验证记录.md",
+   "val": false,
+   "chars": 16208
+  },
+  {
+   "path": "mlog工作笔记.md",
+   "val": false,
+   "chars": 48552
+  },
+  {
+   "path": "README.md",
+   "val": false,
+   "chars": 1481
+  }
+ ],
+ "stats": {
+  "train_tokens": 71929,
+  "val_tokens": 7047,
+  "char_types": 1738,
+  "oov_tokens": 168534,
+  "oov_rate": 0.68092,
+  "unk_tokens": 0,
+  "unk_rate": 0.0,
+  "segments": 139,
+  "top32": "，（）的。、是：不一；—个与数「」只单在条行用有位写成器字量时",
+  "coverage": 0.31846
+ }
+}
