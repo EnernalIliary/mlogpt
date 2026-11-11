@@ -3,12 +3,12 @@
 **在 Mindustry 的 mlog 逻辑处理器里跑一个 0.72M 参数的中文 Transformer。**
 
 玩家在 `message` 方块里输入中文，10,786 台世界处理器（world processor）组成的阵列逐字生成中文，把结果写回 8 个 `message` 方块。
-它是一个**机制演示**：证明一个 Transformer 的前向传播可以被编译成 8,756,803 条 mlog 语句、切成 10,786 块、在游戏里真的跑出和 numpy 逐位一致的 token。
+它是一个**机制演示**：证明一个 Transformer 的前向传播可以被编译成 8,767,542 条 mlog 语句、切成 10,786 块、在游戏里真的跑出和 numpy 逐位一致的 token。
 它**不是**一个能聊天的语言模型——原因写在「诚实的局限」里，请先看那一节再决定要不要 star。
 
 > **English abstract.** mlogpt-zh-0.72m is a 721,152-parameter, decoder-only Chinese Transformer whose entire forward pass
-> (analytic embedding, single-head attention, FFN, 4096-way output head) is compiled into 8,756,803 mlog statements spread
-> over 10,786 Mindustry world processors — a 71.32 MB blueprint that takes about 63 s to build. Fed a short Chinese prompt
+> (analytic embedding, single-head attention, FFN, 4096-way output head) is compiled into 8,767,542 mlog statements spread
+> over 10,786 Mindustry world processors — a 71.41 MB blueprint that takes about 52 s to build. Fed a short Chinese prompt
 > typed into a message block, the array emits characters one at a time (~5 s per character; 8 characters in 60 ticks / 42.7 s
 > on a real headless executor), token-exact against the numpy reference. This is a mechanism demo, not a usable language model:
 > val perplexity is 94.8 across a 4096-character vocabulary and top-1 accuracy is 18.5%, so output reads like term fragments.
@@ -18,13 +18,13 @@
 
 ## 下载（不构建）
 
-不想跑构建的，直接拿成品：**[Release v0.1.0](https://github.com/EnernalIliary/mlogpt/releases/tag/v0.1.0)**
+不想跑构建的，直接拿成品：**[Release v0.1.1](https://github.com/EnernalIliary/mlogpt/releases/tag/v0.1.1)**（v0.1.1 修掉了轮询自旋，空转快 6.1×，见 [04 §3](docs/04-performance.md)）
 
 | 资产 | 用途 |
 | --- | --- |
-| `mlogpt-zh-0.72m.msch` | 全尺寸蓝图 71.32 MB / 10,966 方块。留出约 104×104 空地，贴进去、按播放，右键**最右边**的 message 方块打中文 |
-| `mlogpt-toy-d8s8l2v32.msch` | 玩具版 57 台，10 秒验证「能贴、能跑、能出字」，不需要大空间 |
-| `mlogpt-zh-0.72m-fp32.npz` + `vocab-zh-4096.json` | 权重与词表（仓库里也有） |
+| `mlogpt-zh-0.72m.msch` | 71,414,679 B。全尺寸蓝图 / 10,966 方块。留出约 104×104 空地，贴进去、按播放，右键**最右边**的 message 方块打中文 |
+| `mlogpt-toy-d8s8l2v32.msch` | 87,084 B，玩具版 57 台，10 秒验证「能贴、能跑、能出字」，不需要大空间 |
+| `mlogpt-zh-0.72m-fp32.npz` + `vocab-zh-4096.json` | 5,771,362 B + 58,207 B，权重与词表（仓库里也有） |
 
 world processor 只在编辑器 / 沙盒 / `rules.allowEditWorldProcessors` 下运行，战役里贴了不会动。
 
@@ -37,7 +37,7 @@ world processor 只在编辑器 / 沙盒 / `rules.allowEditWorldProcessors` 下�
 | 是 | 不是 |
 | --- | --- |
 | 一个可复现的「模型 → 指令流 → 游戏内执行」编译器演示 | 一个能对话、能写作、能干活的模型 |
-| 一份 8,756,803 条语句、10,786 台处理器的真实产物 | 一个跑在 GPU 上的玩具 |
+| 一份 8,767,542 条语句、10,786 台处理器的真实产物 | 一个跑在 GPU 上的玩具 |
 | 与 numpy 参考实现逐位对拍的推理结果 | 一个「看着像中文」的随机字符发生器 |
 
 模型叫 `mlogpt-zh-0.72m`：中文、字符级、0.72M 参数、4 层、d=128、窗口 16 个 token。
@@ -99,7 +99,7 @@ python mlogpt/reference.py --weights weights/toy-d8s8l2v32.npz \
 
 玩具权重里带一张 32×8 的嵌入表 `E`（所以玩具构建不传 `--table-free`）；全尺寸构建走解析式嵌入，没有表可查。
 
-### 2. 全尺寸构建（约 1 分钟，71.32 MB）
+### 2. 全尺寸构建（约 1 分钟，71.41 MB）
 
 ```bash
 python mlogpt/gen.py --build \
@@ -109,7 +109,7 @@ python mlogpt/gen.py --build \
   --vocab  weights/vocab-zh-4096.json --out mlogpt-zh-0.72m.msch
 ```
 
-约 63 s 后得到 `mlogpt-zh-0.72m.msch`（71.32 MB）和同名 `.json` 统计文件；`.json` 会被 `--run` 和 `web/ui.py` 读走。
+约 52 s 后得到 `mlogpt-zh-0.72m.msch`（71.41 MB）和同名 `.json` 统计文件；`.json` 会被 `--run` 和 `web/ui.py` 读走。
 
 71 MB 的蓝图**不在 git 里**（`.gitignore` 里排除 `*.msch`），请自己构建。
 
@@ -171,10 +171,10 @@ python web/ui.py     # http://127.0.0.1:8771
 | --- | --- |
 | 处理器 | 10,786 台，全部 world processor（`setrate 1000` ⇒ 1000 条/tick/台） |
 | memory cell | 170 个 |
-| 语句总数 | 8,756,803（其中前向 7,362,930，占 84.1%） |
-| 单台最多语句 | 983 行（mlog 硬上限 999） |
-| 蓝图大小 | 71.32 MB（`--out mlogpt-zh-0.72m.msch`） |
-| 构建耗时 | 约 63 s |
+| 语句总数 | 8,767,542（其中前向 7,362,930，占 84.0%） |
+| 单台最多语句 | 984 行（mlog 硬上限 999） |
+| 蓝图大小 | 71.41 MB（`--out mlogpt-zh-0.72m.msch`） |
+| 构建耗时 | 约 52 s |
 | 8 个 token | 60 tick，实测 42.7 s |
 | 每 token | 约 5 s |
 | 每 token 同步点 | 7~8 个 |
@@ -198,7 +198,7 @@ python web/ui.py     # http://127.0.0.1:8771
 
 **5. 速度不适合交互。** 约 5 s 一个字，8 个字 42.7 s。你打完一句，它也答不完。
 
-**6. 构建产物很大。** 71.32 MB 的蓝图，粘贴和加载都不轻；构建还要约 63 s。
+**6. 构建产物很大。** 71.41 MB 的蓝图，粘贴和加载都不轻；构建还要约 52 s。
 
 **7. headless 跑不是开箱即用。** 需要 v160.7 server jar + JRE21，执行器在姊妹仓里，本仓库不打包。
 

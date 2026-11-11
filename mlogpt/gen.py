@@ -494,6 +494,7 @@ def build(cfg, W, path, stats_path=None, verbose=True):
         a.jmp("i0", "equal", "f", "0")
         a.add("set last 0")
         a.label("L")
+        a.add("wait 0")   # 空转节流：每 tick 只轮询一遍（否则 1000 ipt 全烧在自旋上）
         a.add("read g sp0 %d" % SL_GO_A)
         a.jmp("L", "lessThanEq", "g", "last")
         a.add("read tk sp0 %d" % (SL_TOK + j))
@@ -531,6 +532,7 @@ def build(cfg, W, path, stats_path=None, verbose=True):
         a.jmp("i0", "equal", "f", "0")
         a.add("set last 0")
         a.label("L")
+        a.add("wait 0")   # 空转节流：每 tick 只轮询一遍（否则 1000 ipt 全烧在自旋上）
         a.add("read ph sp0 %d" % SL_GO_B)
         a.jmp("L", "lessThanEq", "ph", "last")
         for p in sorted(deps[ci]):
@@ -558,6 +560,7 @@ def build(cfg, W, path, stats_path=None, verbose=True):
         a.jmp("i0", "equal", "f", "0")
         a.add("set last 0")
         a.label("L")
+        a.add("wait 0")   # 空转节流：每 tick 只轮询一遍（否则 1000 ipt 全烧在自旋上）
         a.add("read ph sp0 %d" % SL_GO_B)
         a.jmp("L", "lessThanEq", "ph", "last")
         for p in outchunks:
@@ -599,10 +602,12 @@ def build(cfg, W, path, stats_path=None, verbose=True):
         a.jmp("i0", "equal", "f", "0")
         a.add("set last 0")
         a.label("L")
+        a.add("wait 0")   # 空转节流：每 tick 只轮询一遍（否则 1000 ipt 全烧在自旋上）
         a.add("read ph sp0 %d" % SL_GO_B)
         a.jmp("L", "lessThanEq", "ph", "last")
         a.add("op mul tgt ph %d" % (hi1 - hi0))
         a.label("WC")
+        a.add("wait 0")
         a.add("set s 0")
         for hh in range(hi0, hi1):
             a.add("read v hf%d %d" % (hh // SLOTS, hh % SLOTS))
@@ -654,6 +659,7 @@ def build(cfg, W, path, stats_path=None, verbose=True):
         a.jmp("i0", "equal", "f", "0")
         a.add("set last 0")
         a.label("L")
+        a.add("wait 0")   # 空转节流：每 tick 只轮询一遍（否则 1000 ipt 全烧在自旋上）
         a.add("read ph sp0 %d" % SL_GO_B)
         a.jmp("L", "lessThanEq", "ph", "last")
         a.add("read bar sp0 %d" % SL_SCAN_PH)
@@ -727,6 +733,7 @@ def build(cfg, W, path, stats_path=None, verbose=True):
         a.jmp("i0", "equal", "f", "0")
         a.add("set last 0")
         a.label("L")
+        a.add("wait 0")   # 空转节流：每 tick 只轮询一遍（否则 1000 ipt 全烧在自旋上）
         a.add("read ph sp0 %d" % SL_GO_B)
         a.jmp("L", "lessThanEq", "ph", "last")
         a.add("read tph sp0 %d" % SL_SCAN_PH)
@@ -763,6 +770,7 @@ def build(cfg, W, path, stats_path=None, verbose=True):
         a.add("write 1 sp0 %d" % SL_PHASE)
         a.label("WGO")
         a.label("WG1")
+        a.add("wait 0")
         # 等输入期间心跳：状态面板靠它区分「在等你打字」和「driver 根本没跑」
         a.add("write 1 sp0 %d" % SL_PHASE)
         a.add("read hb sp0 %d" % SL_HB)
@@ -790,10 +798,12 @@ def build(cfg, W, path, stats_path=None, verbose=True):
     a.add("write p sp0 %d" % SL_GO_A)
     for j in range(S):
         a.label("U%d" % j)
+        a.add("wait 0")
         a.add("read pf pf0 %d" % j)
         a.jmp("U%d" % j, "lessThan", "pf", "p")
     a.add("write p sp0 %d" % SL_GO_B)
     a.label("WC")
+    a.add("wait 0")
     a.add("read dc sp0 %d" % SL_DONE_C)
     a.jmp("WC", "lessThan", "dc", "p")
     a.add("read nk sp0 %d" % SL_TOKOUT)
@@ -812,6 +822,7 @@ def build(cfg, W, path, stats_path=None, verbose=True):
         a.add("write 3 sp0 %d" % SL_PHASE)
         a.label("ARM")
         a.label("AR1")
+        a.add("wait 0")
         a.add("read hb sp0 %d" % SL_HB)
         a.add("op add hb hb 1")
         a.add("write hb sp0 %d" % SL_HB)
@@ -841,6 +852,7 @@ def build(cfg, W, path, stats_path=None, verbose=True):
                 a.add("read f sp0 %d" % SL_INIT)
                 a.jmp("i0", "equal", "f", "0")
                 a.label("S")
+                a.add("wait 0")
                 a.add("read c sp0 %d" % SL_CNT)
                 a.jmp("S", "lessThan", "c", str(N))
                 a.add("read v sp0 %d" % (SL_OUT + p))
@@ -859,6 +871,7 @@ def build(cfg, W, path, stats_path=None, verbose=True):
                     a.label(lab)
                 a.add("printflush message%d" % (p + 1))
                 a.label("halt")
+                a.add("wait 0")
                 if cfg.get("input"):
                     # 输入模式要能反复跑：等 driver 把 CNT 清回 <N（新一轮开始）再回到等字
                     a.add("read c2 sp0 %d" % SL_CNT)
@@ -921,6 +934,7 @@ def build(cfg, W, path, stats_path=None, verbose=True):
         a.jmp("i0", "equal", "f", "0")
         a.add("set last 0")
         a.label("L")
+        a.add("wait 0")
         a.add("read c sp0 %d" % SL_CNT)
         a.jmp("L", "lessThanEq", "c", "last")
         a.add("set i 0")
@@ -988,7 +1002,7 @@ def build(cfg, W, path, stats_path=None, verbose=True):
         a.add("print pn")
         a.label("FL")
         a.add("printflush message%d" % (MSG_STAT + 1))
-        a.add("wait 0.4")
+        a.add("wait 0.1")
         a.jmp("L")
         procs.append(("reporter", a.render(), []))
 

@@ -216,5 +216,5 @@ python mlogpt/gen.py --build \
 | 用自己的语料训一个 | 自己的文本 + `build_corpus.py` + `train.py` + 重新 `--build` |
 | 换规模（更宽/更深） | 改 `d`/`L` 后重训 + 重新切块，注意 999 条/台的上限会先撞墙 |
 
-下一篇：[03 · 在 mlog 里做推理](03-inference-in-mlog.md)——权重怎么变成 8,756,803 条语句。
+下一篇：[03 · 在 mlog 里做推理](03-inference-in-mlog.md)——权重怎么变成 8,767,542 条语句。
 

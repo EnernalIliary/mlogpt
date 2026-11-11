@@ -45,20 +45,20 @@ python -X utf8 mlogpt/gen.py --build --d 8 --S 8 --L 2 --V 32 --N 4 --cap 600 \
 W	units 854	0.0s
 W	packed 16 chunks	0.0s
 W	procs 49 cells 16	0.0s
-W	built toy.msch  0.08 MB  49 procs  16 cells  max 579 lines  0.0s
+W	built toy.msch  0.08 MB  49 procs  16 cells  max 580 lines  0.0s
 W	ref tokens [5, 12, 12, 3]
 ```
 
 要点：
 
-- **49 台处理器、16 个 world-cell、单台最多 579 行、0.08 MB**；
-- `max 579 lines` 是最终单台最大语句数，离硬上限 1000 还有余量；真撞上硬上限才会
+- **49 台处理器、16 个 world-cell、单台最多 580 行、0.08 MB**；
+- `max 580 lines` 是最终单台最大语句数，离硬上限 1000 还有余量；真撞上硬上限才会
   打印 `!! OVER LIMIT: [...]`；
 - 权重只有 12 KB（`weights/toy-d8s8l2v32.npz`），是给这条链路做冒烟用的。
 
 **49 还是 57？** 上面这条命令**不带** `--input`，是 49 台（其中 1 台是负责说明 / 状态面板的
 `reporter`）。加上 `--input --input-text 数条` 会多铺 8 台分词器（57 台，仍是 16 个 world-cell、
-579 行、0.09 MB），`ref_tokens` 也从「只按 `--seed-tok` 无条件采样」变成
+580 行、0.09 MB），`ref_tokens` 也从「只按 `--seed-tok` 无条件采样」变成
 「按 `数条` 的 prompt 采样」，得到 `[2, 12, 9, 3]` —— 正好等于下面第 2 步
 `reference.py --text 数条` 的输出。两个数字都对，取决于加不加输入模式：
 
@@ -68,7 +68,7 @@ python -X utf8 mlogpt/gen.py --build --d 8 --S 8 --L 2 --V 32 --N 4 --cap 600 \
   --weights weights/toy-d8s8l2v32.npz --vocab weights/toy-vocab-32.json \
   --out toy-in.msch
 # W	procs 57 cells 16
-# W	built toy-in.msch  0.09 MB  57 procs  16 cells  max 579 lines  0.1s
+# W	built toy-in.msch  0.09 MB  57 procs  16 cells  max 580 lines  0.1s
 # W	ref tokens [2, 12, 9, 3]
 ```
 
@@ -112,8 +112,8 @@ python -X utf8 mlogpt/gen.py --build --d 128 --S 16 --L 4 --V 4096 --N 8 --cap 9
 W	units 216124	10.8s
 W	packed 8098 chunks	11.8s
 W	split 1010 chunks (round 0) -> 9108	12.8s
-W	procs 10786 cells 170	21.3s
-W	built mlogpt-zh-0.72m.msch  71.32 MB  10786 procs  170 cells  max 983 lines  48.4s
+W	procs 10786 cells 170	22.6s
+W	built mlogpt-zh-0.72m.msch  71.41 MB  10786 procs  170 cells  max 984 lines  52.4s
 W	ref tokens [45, 390, 400, 18, 196, 45, 2, 127]
 ```
 
@@ -128,17 +128,17 @@ W	ref tokens [45, 390, 400, 18, 196, 45, 2, 127]
 | `units` | 216124 |
 | `nfwd` / `nhead` / `nsplit` | 9108 / 1366 / 1010 |
 | `nval` / `nvalcell` / `nacell` | 64044 / 126 / 4 |
-| `total_stmts` / `fwd_stmts` | 8756803 / 7362930 |
-| `maxlines` | 983（单台最大语句数，低于硬上限 1000；`over` 为空数组） |
-| `bytes` | 71320323 |
-| `build_s` | 48.4（同一台机器首跑 56.6，受缓存/负载影响） |
+| `total_stmts` / `fwd_stmts` | 8767542 / 7362930 |
+| `maxlines` | 984（单台最大语句数，低于硬上限 1000；`over` 为空数组） |
+| `bytes` | 71414679 |
+| `build_s` | 52.4（同一台机器首跑 56.6，受缓存/负载影响） |
 | `ref_tokens` | [45, 390, 400, 18, 196, 45, 2, 127] |
 | `input` / `input_idx` | true / 10（`msgpos` 的下标，指向最右那块输入方块） |
 | `prompt` | [30, 527, 101, 0, 0, …] |
 | `layout` | `{"cc": 13, "ncellrows": 13, "y0": 15, "pw": 104}` |
 
-产物大小 `71320323` 字节 = 71.32 MiB，和 `ls` / `stat` 对得上；两次独立构建的
-`bytes` / `maxlines` / `ref_tokens` 完全一致（只有 `build_s` 在 48–57 s 之间浮动）。
+产物大小 `71414679` 字节 = 71.41 MB，和 `ls` / `stat` 对得上；两次独立构建的
+`bytes` / `maxlines` / `ref_tokens` 完全一致（只有 `build_s` 在 52–57 s 之间浮动）。
 
 同一条模型，numpy 端的解码结果：
 
@@ -221,7 +221,7 @@ train 224,714 / val 21,646 token。语料本身没有随仓库分发（版权原
 ## 一个刻意的遗留命名
 
 `.msch` 里的蓝图标题仍然叫 `closure_wpl_d128s16l4v4096`（`mlogpt/gen.py:959`）。
-这是研究阶段的名字，改掉它会让产物的字节数与本文档记录的 71,320,323 对不上
+这是研究阶段的名字，改掉它会让产物的字节数与本文档记录的 71,414,679 对不上
 （蓝图名进的是压缩块），所以保留原名。它只是蓝图标题，不影响生成逻辑。
 在 Mindustry 里导入后看到的蓝图名就是它。
 
@@ -231,7 +231,7 @@ train 224,714 / val 21,646 token。语料本身没有随仓库分发（版权原
   仓库里带的只有 5.5 MB 权重和两个词表。
 - **`--cap` 与 `maxlines` 不是一回事**：`--cap` 是「把单元打包成处理器」时每包的
   语句预算（默认 900），之后还有一个硬上限 `LIMIT = 1000` 兜底；`maxlines` 是最终
-  单台最大语句数（这里是 983，卡在两者之间）。`stats.over` 列出超过硬上限的处理器，
+  单台最大语句数（这里是 984，卡在两者之间）。`stats.over` 列出超过硬上限的处理器，
   空数组就代表全都在 1000 行以内。把 `--cap` 调小会拆出更多处理器（产物更大），
   调大则更容易撞上硬上限拆分。
 - **`--ticks` 只在 `--run` 下有意义**，它是「总共跑多少 tick」（覆盖 `--max-ticks`）；
